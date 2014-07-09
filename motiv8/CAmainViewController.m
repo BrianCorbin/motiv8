@@ -59,9 +59,13 @@
     if(![[NSUserDefaults standardUserDefaults] boolForKey:@"hasPerformedFirstLaunch"])
     {
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"hasPerformedFirstLaunch"];
+        NSLog(@"First Launch Complete");
         [self presentViewController:[self.storyboard instantiateViewControllerWithIdentifier:@"CAinfoViewController"] animated:NO completion:nil];
         [[NSUserDefaults standardUserDefaults] synchronize];
     }
+    
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];
+    
     _messageLbl.text = [[NSUserDefaults standardUserDefaults] stringForKey:@"CurrentMessage"];
     //[[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound categories:nil]];
 }

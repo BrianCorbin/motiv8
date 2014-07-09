@@ -20,6 +20,7 @@
     //[application registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound categories:nil]];
     
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];
+    
     //[application registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound categories:nil]];
     
     if(![[NSUserDefaults standardUserDefaults] boolForKey:@"hasPerformedFirstLaunch"])
@@ -55,16 +56,6 @@
     return YES;
 }
 
--(void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
-{
-    NSString *showMessage = [[NSUserDefaults standardUserDefaults] stringForKey:@"NextMessage"];
-    [[NSUserDefaults standardUserDefaults] setObject:showMessage forKey:@"CurrentMessage"];
-    NSArray *messages = [[NSUserDefaults standardUserDefaults] arrayForKey:@"Messages"];
-    int randNum = arc4random_uniform((uint32_t)messages.count);
-    [[NSUserDefaults standardUserDefaults] setObject:messages[randNum] forKey:@"NextMessage"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-}
-    
 - (void)applicationWillResignActive:(UIApplication *)application
 {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
@@ -74,7 +65,8 @@
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
     UILocalNotification *localNotification = [[UILocalNotification alloc] init];
-    localNotification.fireDate = [NSDate dateWithTimeIntervalSinceNow:[[NSUserDefaults standardUserDefaults] integerForKey:@"TimeInterval"]];
+    //localNotification.fireDate = [NSDate dateWithTimeIntervalSinceNow:[[NSUserDefaults standardUserDefaults] integerForKey:@"TimeInterval"]];
+    localNotification.fireDate = [NSDate dateWithTimeIntervalSinceNow:10];
     localNotification.alertBody = [[NSUserDefaults standardUserDefaults] stringForKey:@"NextMessage"];
     localNotification.timeZone = [NSTimeZone defaultTimeZone];
     [[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
@@ -89,6 +81,7 @@
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    NSLog(@"applicationDidBecomeActive");
     NSArray *notifications = [[UIApplication sharedApplication] scheduledLocalNotifications];
     if(notifications.count == 0)
     {
