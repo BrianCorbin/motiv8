@@ -12,11 +12,19 @@
 
 - (IBAction)doneAction:(UIBarButtonItem *)sender;
 - (IBAction)timeIntervalChangedAction:(UIDatePicker *)sender;
+//- (IBAction)beginSilentTimeIntervalChangedAction:(UIDatePicker *)sender;
+//- (IBAction)endSilentTimeIntervalChangedAction:(UIDatePicker *)sender;
 @property (weak, nonatomic) IBOutlet UIDatePicker *timeIntervalPicker;
 @property (weak, nonatomic) IBOutlet UILabel *timeIntervalLbl;
+//@property (weak, nonatomic) IBOutlet UILabel *beginSilentIntervalLbl;
+//@property (weak, nonatomic) IBOutlet UILabel *endSilentIntervalLbl;
 @property (weak, nonatomic) IBOutlet UITableViewCell *datePickerCell;
+//@property (weak, nonatomic) IBOutlet UITableViewCell *silentTimePickerCell;
+//@property (weak, nonatomic) IBOutlet UIDatePicker *beginSilentTimePicker;
+//@property (weak, nonatomic) IBOutlet UIDatePicker *endSilentTimePicker;
 
 @property BOOL pickerIsShowing;
+@property BOOL silentPickerIsShowing;
 
 
 @end
@@ -37,12 +45,19 @@
     [super viewDidLoad];
     
     NSInteger timeIntervalInt = [[NSUserDefaults standardUserDefaults] integerForKey:@"TimeInterval"];
+    //NSInteger beginSilentInt = [[NSUserDefaults standardUserDefaults] integerForKey:@"BeginSilentMode"];
+    //NSInteger endSilentInt = [[NSUserDefaults standardUserDefaults] integerForKey:@"EndSilentMode"];
     NSString* timeIntervalStr = [[NSUserDefaults standardUserDefaults] stringForKey:@"TimeIntervalStr"];
     
     _timeIntervalLbl.text = timeIntervalStr;
     _timeIntervalPicker.hidden = YES;
     _timeIntervalPicker.countDownDuration = (int)timeIntervalInt;
+    //_beginSilentTimePicker.countDownDuration = (int)beginSilentInt;
+    //_endSilentTimePicker.countDownDuration = (int)endSilentInt;
+    //_beginSilentTimePicker.hidden = YES;
+    //_endSilentTimePicker.hidden = YES;
     _pickerIsShowing = NO;
+    //_silentPickerIsShowing = NO;
 }
 
 - (void)didReceiveMemoryWarning
@@ -61,6 +76,14 @@
             [self showTimeIntervalPickerCell];
     }
     
+    /*if(indexPath.row == 2)
+    {
+        if(_silentPickerIsShowing)
+            [self hideSilentTimeIntervalPickerCell];
+        else
+            [self showSilentTimeIntervalPickerCell];
+    }*/
+    
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
@@ -69,6 +92,8 @@
     CGFloat height = 44;
     if(indexPath.row == 1)
         height = self.pickerIsShowing ? 164.0 : 0.0f;
+    //if(indexPath.row == 3)
+        //height = self.silentPickerIsShowing ? 164.0 : 0.0f;
     return height;
 }
 
@@ -88,6 +113,24 @@
                      }];
 }
 
+/*-(void)hideSilentTimeIntervalPickerCell
+{
+    _silentPickerIsShowing = NO;
+    
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
+    
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         self.beginSilentTimePicker.alpha = 0.0f;
+                         self.endSilentTimePicker.alpha = 0.0f;
+                     }
+                     completion:^(BOOL finished){
+                         self.beginSilentTimePicker.hidden = YES;
+                         self.endSilentTimePicker.hidden = YES;
+                     }];
+}*/
+
 -(void)showTimeIntervalPickerCell
 {
     self.pickerIsShowing = YES;
@@ -105,6 +148,26 @@
     }];
 }
 
+/*-(void)showSilentTimeIntervalPickerCell
+{
+    self.silentPickerIsShowing = YES;
+    
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
+    
+    self.beginSilentTimePicker.hidden = NO;
+    self.beginSilentTimePicker.alpha = 0.0f;
+    self.endSilentTimePicker.hidden = NO;
+    self.endSilentTimePicker.alpha = 0.0f;
+    
+    [UIView animateWithDuration:0.25 animations:^{
+        
+        self.beginSilentTimePicker.alpha = 1.0f;
+        self.endSilentTimePicker.alpha = 1.0f;
+        
+    }];
+}*/
+
 - (IBAction)doneAction:(UIBarButtonItem *)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -121,4 +184,16 @@
     [[NSUserDefaults standardUserDefaults] setObject:[NSString stringWithFormat:@"%dh %dm", hours, minutes] forKey:@"TimeIntervalStr"];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
+
+/*- (IBAction)beginSilentTimeIntervalChangedAction:(UIDatePicker *)sender
+{
+    NSDate* testDate = sender.date;
+    NSLog(@"%@",testDate.description);
+}
+
+- (IBAction)endSilentTimeIntervalChangedAction:(UIDatePicker *)sender
+{
+    
+}*/
+
 @end

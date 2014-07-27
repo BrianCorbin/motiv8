@@ -7,7 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E8B24D77194CE1F50092FE81 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8B24D76194CE1F50092FE81 /* Social.framework */; };
+		E808FDB3196EE5A3007A67B9 /* CAMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = E808FDB2196EE5A3007A67B9 /* CAMessage.m */; };
+		E848C7CD197D5CB600C2601C /* CAFavQuoteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E848C7CC197D5CB600C2601C /* CAFavQuoteViewController.m */; };
+		E84BFE891972F808003F96E4 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E84BFE881972F808003F96E4 /* Social.framework */; };
+		E8B2577419756F5600472596 /* CAFavoritesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E8B2577319756F5600472596 /* CAFavoritesTableViewController.m */; };
 		E8B5A0C21954AD5A00B69826 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8B5A0C11954AD5A00B69826 /* Parse.framework */; };
 		E8B5A0C41954B69900B69826 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8B5A0C31954B69900B69826 /* AudioToolbox.framework */; };
 		E8B5A0C61954B6A200B69826 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8B5A0C51954B6A200B69826 /* CFNetwork.framework */; };
@@ -47,7 +50,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		E8B24D76194CE1F50092FE81 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
+		E808FDB1196EE5A3007A67B9 /* CAMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CAMessage.h; sourceTree = "<group>"; };
+		E808FDB2196EE5A3007A67B9 /* CAMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CAMessage.m; sourceTree = "<group>"; };
+		E848C7CB197D5CB600C2601C /* CAFavQuoteViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CAFavQuoteViewController.h; sourceTree = "<group>"; };
+		E848C7CC197D5CB600C2601C /* CAFavQuoteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CAFavQuoteViewController.m; sourceTree = "<group>"; };
+		E84BFE881972F808003F96E4 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
+		E8B2577219756F5600472596 /* CAFavoritesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CAFavoritesTableViewController.h; sourceTree = "<group>"; };
+		E8B2577319756F5600472596 /* CAFavoritesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CAFavoritesTableViewController.m; sourceTree = "<group>"; };
 		E8B5A0C11954AD5A00B69826 /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
 		E8B5A0C31954B69900B69826 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		E8B5A0C51954B6A200B69826 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
@@ -88,6 +97,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E84BFE891972F808003F96E4 /* Social.framework in Frameworks */,
 				E8B5A0D41954B6E700B69826 /* SystemConfiguration.framework in Frameworks */,
 				E8B5A0D21954B6E100B69826 /* StoreKit.framework in Frameworks */,
 				E8B5A0D01954B6DA00B69826 /* Security.framework in Frameworks */,
@@ -98,7 +108,6 @@
 				E8C397051948D8430070ACC1 /* CoreGraphics.framework in Frameworks */,
 				E8B5A0C61954B6A200B69826 /* CFNetwork.framework in Frameworks */,
 				E8B5A0C41954B69900B69826 /* AudioToolbox.framework in Frameworks */,
-				E8B24D77194CE1F50092FE81 /* Social.framework in Frameworks */,
 				E8C397071948D8430070ACC1 /* UIKit.framework in Frameworks */,
 				E8C397031948D8430070ACC1 /* Foundation.framework in Frameworks */,
 				E8B5A0C21954AD5A00B69826 /* Parse.framework in Frameworks */,
@@ -140,6 +149,7 @@
 		E8C397011948D8430070ACC1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E84BFE881972F808003F96E4 /* Social.framework */,
 				E8B5A0D31954B6E700B69826 /* SystemConfiguration.framework */,
 				E8B5A0D11954B6E100B69826 /* StoreKit.framework */,
 				E8B5A0CF1954B6DA00B69826 /* Security.framework */,
@@ -150,7 +160,6 @@
 				E8B5A0C51954B6A200B69826 /* CFNetwork.framework */,
 				E8B5A0C31954B69900B69826 /* AudioToolbox.framework */,
 				E8B5A0C11954AD5A00B69826 /* Parse.framework */,
-				E8B24D76194CE1F50092FE81 /* Social.framework */,
 				E8C397021948D8430070ACC1 /* Foundation.framework */,
 				E8C397041948D8430070ACC1 /* CoreGraphics.framework */,
 				E8C397061948D8430070ACC1 /* UIKit.framework */,
@@ -162,6 +171,8 @@
 		E8C397081948D8430070ACC1 /* motiv8 */ = {
 			isa = PBXGroup;
 			children = (
+				E808FDB1196EE5A3007A67B9 /* CAMessage.h */,
+				E808FDB2196EE5A3007A67B9 /* CAMessage.m */,
 				E8C397111948D8430070ACC1 /* CAAppDelegate.h */,
 				E8C397121948D8430070ACC1 /* CAAppDelegate.m */,
 				E8C397141948D8430070ACC1 /* Main.storyboard */,
@@ -172,6 +183,10 @@
 				E8D8C16D1948DC3A00A80A93 /* CAinfoViewController.m */,
 				E8D8C1721948DE3100A80A93 /* CAsettingsTableViewController.h */,
 				E8D8C1731948DE3100A80A93 /* CAsettingsTableViewController.m */,
+				E8B2577219756F5600472596 /* CAFavoritesTableViewController.h */,
+				E8B2577319756F5600472596 /* CAFavoritesTableViewController.m */,
+				E848C7CB197D5CB600C2601C /* CAFavQuoteViewController.h */,
+				E848C7CC197D5CB600C2601C /* CAFavQuoteViewController.m */,
 				E8C397091948D8430070ACC1 /* Supporting Files */,
 			);
 			path = motiv8;
@@ -310,8 +325,11 @@
 				E8D8C1741948DE3100A80A93 /* CAsettingsTableViewController.m in Sources */,
 				E8D8C16E1948DC3A00A80A93 /* CAinfoViewController.m in Sources */,
 				E8C397131948D8430070ACC1 /* CAAppDelegate.m in Sources */,
+				E848C7CD197D5CB600C2601C /* CAFavQuoteViewController.m in Sources */,
 				E8C397391948D8600070ACC1 /* CAmainViewController.m in Sources */,
 				E8C3970F1948D8430070ACC1 /* main.m in Sources */,
+				E8B2577419756F5600472596 /* CAFavoritesTableViewController.m in Sources */,
+				E808FDB3196EE5A3007A67B9 /* CAMessage.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

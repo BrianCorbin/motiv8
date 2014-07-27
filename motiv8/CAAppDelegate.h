@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "CAMessage.h"
 
 @interface CAAppDelegate : UIResponder <UIApplicationDelegate>
 

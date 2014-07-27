@@ -13,64 +13,133 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    //Initializing Parse to work with application
     [Parse setApplicationId:@"ENca1CpIt5LOMKgajDydyGcXXSmINEmhnDDOgM21"
                   clientKey:@"A31vuZy7iRF7QbzOY8jkcMPc2MyooFEJSiSLy4yA"];
     [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
+
+    //Allows for localNotifications to register for user
+    //This is for iOS 7
+    //[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];
     
-    //[application registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound categories:nil]];
+    //This is for iOS 8
+    [application registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound categories:nil]];
     
-    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];
-    
-    //[application registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound categories:nil]];
-    
+    //Set up starting messages to introduce the application
     if(![[NSUserDefaults standardUserDefaults] boolForKey:@"hasPerformedFirstLaunch"])
     {
-        NSArray *array = [[NSArray alloc] initWithObjects:@"Genius is one percent inspiration, ninety-nine percent perspiration.", @"Run from your problems, and they'll catch you, for they're much faster than you. But turn to fight them, and they'll run away from you and never come back.", @"Never be ashamed of a scar. It simply means you were stronger than whatever tried to hurt you.", @"If you can dream it, you can do it.", @"If you think you can do a thing or think you can't do a thing, you're right.", @"Obstacles are those frightful things you see when you take your eyes off your goal.", @"Negative results are just what I want. They’re just as valuable to me as positive results. I can never find the thing that does the job best until I find the ones that don’t.", @"I find out what the world needs. Then I go ahead and try to invent it.", @"Everything comes to him who hustles while he waits.", @"I never did a day's work in my life, it was all fun.", @"Our greatest weakness lies in giving up. The most certain way to succeed is always to try just one more time.", @"When you have exhausted all possibilities, remember this - you haven't.", @"I have not failed. I've just found 10,000 ways that won't work.", @"Many of life's failures are people who did not realize how close they were to success when they gave up.", @"If we did all the things we are really capable of doing, we would literally astound ourselves.", nil];
-        [[NSUserDefaults standardUserDefaults] setObject:array forKey:@"Messages"];
-        int randNum = arc4random_uniform((int)(array.count));
-        [[NSUserDefaults standardUserDefaults] setObject:array[randNum] forKey:@"CurrentMessage"];
-        randNum = arc4random_uniform((int)(array.count));
-        [[NSUserDefaults standardUserDefaults] setObject:array[randNum] forKey:@"NextMessage"];
+        CAMessage* firstMessage = [[CAMessage alloc] init];
+        CAMessage* secondMessage = [[CAMessage alloc] init];
+        firstMessage.message = @"Welcome to motiv8! Press me to see your next message.";
+        firstMessage.author = @"motiv8 Team";
+        secondMessage.message = @"You can favorite messages and view them again at any time by pressing the heart below. Never give up, and stay motivated!";
+        secondMessage.author = @"motiv8 Team";
+        
+        [self saveObject:firstMessage forKey:@"CurrentMessage"];
+        [self saveObject:secondMessage forKey:@"NextMessage"];
     }
     
+    //Fire every time the app is launched and checks for new quotes on the Parse server in the background.
     PFQuery *query = [PFQuery queryWithClassName:@"Messages"];
     NSMutableArray *messages = [[NSMutableArray alloc] init];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
                          {
                              if(!error)
                              {
-                                 NSLog(@"Working?");
-                                 for(PFObject *object in objects)
+                                 NSArray* existingMessages = [[NSUserDefaults standardUserDefaults] arrayForKey:@"Messages"];
+                                 if(objects.count > existingMessages.count)
                                  {
-                                     NSString* message = object[@"message"];
-                                     NSString* author = object[@"author"];
-                                     NSString* messageFormatted = [NSString stringWithFormat:@"\"%@\" - %@", message, author];
-                                     [messages addObject:messageFormatted];
+                                     for(PFObject *object in objects)
+                                     {
+                                         CAMessage* newMessage = [[CAMessage alloc] init];
+                                         newMessage.message = object[@"message"];
+                                         newMessage.author = object[@"author"];
+                                         newMessage.favorited = @"NO";
+                                         NSData* encodedObject = [self encodeObject:newMessage];
+                                         [messages addObject:encodedObject];
+                                     }
+                                     
+                                     [self addNewMessages:messages and:[[NSUserDefaults standardUserDefaults] arrayForKey:@"Messages"]];
+                                     
+                                     //sends notification to refreshView in mainViewController to reload the quote and author
+                                     [[NSNotificationCenter defaultCenter] postNotificationName:@"refreshView" object:nil];
                                  }
-                                 [[NSUserDefaults standardUserDefaults] setObject:messages forKey:@"Messages"];
-                                 [[NSUserDefaults standardUserDefaults] synchronize];
-                                 [[NSNotificationCenter defaultCenter] postNotificationName:@"refreshView" object:nil];
                              }
                          }];
-    
     return YES;
+}
+
+-(void)addNewMessages:(NSMutableArray*) newMessages and:(NSArray*)existingMessages
+{
+    NSMutableArray* existingMessagesMA = [[NSMutableArray alloc] initWithArray:existingMessages];
+    for(int i=0; i<newMessages.count; i++)
+    {
+        BOOL messageExists = NO;
+        CAMessage* newMessage = [self decodeObject:[newMessages objectAtIndex:i]];
+        for(int j=0; j<existingMessages.count; j++)
+        {
+            CAMessage* existingMessage = [self decodeObject:[existingMessages objectAtIndex:j]];
+            if(newMessage.message == existingMessage.message)
+            {
+                messageExists = YES;
+                break;
+            }
+        }
+        if(!messageExists)
+        {
+            NSData* encodedObject = [self encodeObject:newMessage];
+            [existingMessagesMA insertObject:encodedObject atIndex:arc4random_uniform((uint32_t)existingMessagesMA.count)];
+        }
+    }
+    existingMessages = [[NSArray alloc] initWithArray:existingMessagesMA];
+    [[NSUserDefaults standardUserDefaults] setObject:existingMessages forKey:@"Messages"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+//encodes CAMessage to NSData
+-(NSData*)encodeObject:(CAMessage*) object
+{
+    NSData* encodedObject = [NSKeyedArchiver archivedDataWithRootObject:object];
+    return encodedObject;
+}
+
+-(CAMessage*)decodeObject:(NSData*) encodedObject
+{
+    CAMessage* unencodedObject = [NSKeyedUnarchiver unarchiveObjectWithData:encodedObject];
+    return unencodedObject;
+}
+
+//saves CAMessage to NSUserDefaults
+-(void)saveObject:(CAMessage*) object forKey:(NSString*) key
+{
+    NSData* encodedObject = [NSKeyedArchiver archivedDataWithRootObject:object];
+    [[NSUserDefaults standardUserDefaults] setObject:encodedObject forKey:key];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+//Loads CAMessage from NSUserDefaults
+-(CAMessage*)loadObjectWithKey:(NSString*) key
+{
+    NSData* encodedObject = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+    CAMessage* unencodedObject = [NSKeyedUnarchiver unarchiveObjectWithData:encodedObject];
+    return unencodedObject;
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
 {
-    // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-    // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
+    //When app enters background, create local notification after set time interval
+    //as long as it's within the allowed notification times
     UILocalNotification *localNotification = [[UILocalNotification alloc] init];
-    //localNotification.fireDate = [NSDate dateWithTimeIntervalSinceNow:[[NSUserDefaults standardUserDefaults] integerForKey:@"TimeInterval"]];
-    localNotification.fireDate = [NSDate dateWithTimeIntervalSinceNow:10];
-    localNotification.alertBody = [[NSUserDefaults standardUserDefaults] stringForKey:@"NextMessage"];
+    CAMessage* nextMessage = [self loadObjectWithKey:@"NextMessage"];
+    localNotification.fireDate = [NSDate dateWithTimeIntervalSinceNow:[[NSUserDefaults standardUserDefaults] integerForKey:@"TimeInterval"]];
+    localNotification.alertBody = [NSString stringWithFormat:@"\"%@\" - %@", nextMessage.message, nextMessage.author];
     localNotification.timeZone = [NSTimeZone defaultTimeZone];
     [[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
-    NSLog(@"LocalNotificationWithContents \"%@\"", [[NSUserDefaults standardUserDefaults] stringForKey:@"NextMessage"]);
+    NSLog(@"\"%@\" - %@", nextMessage.message, nextMessage.author);
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
@@ -80,25 +149,33 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
-    // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-    NSLog(@"applicationDidBecomeActive");
-    NSArray *notifications = [[UIApplication sharedApplication] scheduledLocalNotifications];
-    if(notifications.count == 0)
+    if([[NSUserDefaults standardUserDefaults] boolForKey:@"hasPerformedFirstLaunch"])
     {
-        NSString *showMessage = [[NSUserDefaults standardUserDefaults] stringForKey:@"NextMessage"];
-        [[NSUserDefaults standardUserDefaults] setObject:showMessage forKey:@"CurrentMessage"];
-        NSArray *messages = [[NSUserDefaults standardUserDefaults] arrayForKey:@"Messages"];
-        int randNum = arc4random_uniform((uint32_t)messages.count);
-        [[NSUserDefaults standardUserDefaults] setObject:messages[randNum] forKey:@"NextMessage"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
+        //Checks if a notification has gone off (when notifications.count == 0)
+        //and sets it as current message and generates a new nextMessage.
+        //Saves all to NSUserDefaults and creates refreshView Notification.
+        NSArray *notifications = [[UIApplication sharedApplication] scheduledLocalNotifications];
+        if(notifications.count == 0)
+        {
+            CAMessage* nextMessage = [self loadObjectWithKey:@"NextMessage"];
+            [self saveObject:nextMessage forKey:@"CurrentMessage"];
+            NSArray *messages = [[NSUserDefaults standardUserDefaults] arrayForKey:@"Messages"];
+            int randNum = arc4random_uniform((uint32_t)messages.count);
+            [[NSUserDefaults standardUserDefaults] setObject:messages[randNum] forKey:@"NextMessage"];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+        }
+        [[UIApplication sharedApplication] cancelAllLocalNotifications];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"refreshView" object:nil];
     }
-    [[UIApplication sharedApplication] cancelAllLocalNotifications];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"refreshView" object:nil];
+    
+    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"hasPerformedFirstLaunch"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
-    // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    //cancel all notifications
     [[UIApplication sharedApplication] cancelAllLocalNotifications];
 }
 
